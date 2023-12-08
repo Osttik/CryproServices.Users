@@ -1,0 +1,3 @@
+[submodule "CryproServices.Data"]
+	path = CryproServices.Data
+	url = https://github.com/Osttik/CryptoServices.Data.git
