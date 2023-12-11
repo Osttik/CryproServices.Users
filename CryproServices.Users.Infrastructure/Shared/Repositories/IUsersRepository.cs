@@ -10,5 +10,10 @@ namespace CryproServices.Users.Infrastructure.Shared.Repositories
     public interface IUsersRepository
     {
         public Task<List<User>> GetAllUsers();
+        public Task<User?> UpdateUser(User user);
+        public Task<User> AddUser(User user);
+        public Task<bool> RemoveUser(Guid id);
+        public User? GetUserById(Guid id);
+        public Task<User?> GetUserByLoginAndPassword(string login, string password);
     }
 }

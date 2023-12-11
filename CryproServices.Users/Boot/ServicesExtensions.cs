@@ -5,8 +5,11 @@ using CryproServices.Users.Infrastructure.Shared.Repositories;
 using CryproServices.Users.Infrastructure.Shared.Services;
 using CryptoServices.Data;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CryproServices.Users.API.Boot
 {
@@ -44,6 +47,31 @@ namespace CryproServices.Users.API.Boot
             services.AddTransient<IUsersService, UsersService>();
 
             services.AddTransient<IUsersRepository, UsersRepository>();
+
+            services.AddTransient<IHashService, HashService>();
+            services.AddTransient<IJWTService, JWTService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddJWTAuth(this IServiceCollection services, ConfigurationManager configuration)
+        {
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("JWT")["secretKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             return services;
         }
